@@ -1,5 +1,7 @@
 # BTC Server [![Build and deploy Docker app to Lightsail](https://github.com/keremnalbant/btc-server/actions/workflows/prod.yml/badge.svg)](https://github.com/keremnalbant/btc-server/actions/workflows/prod.yml)
 
+[See Live](https://d3joyke1579jmx.cloudfront.net)
+
 ## Demo Video
 https://github.com/keremnalbant/btc-server/assets/43813768/f5e875a9-3e10-439a-be41-c2fb4c3d8488
 
