@@ -1,0 +1,30 @@
+{
+  "containers": {
+    "app": {
+      "image": "",
+      "environment": {
+        "DB_URI": "#{DB_URI}#",
+        "DB_NAME": "#{DB_NAME}#",
+        "DB_USER_COLLECTION": "#{DB_USER_COLLECTION}#",
+        "DB_GUESS_COLLECTION": "#{DB_GUESS_COLLECTION}#",
+        "CLIENT_URL": "#{CLIENT_URL}#",
+        "BTC_API_URL": "#{BTC_API_URL}#"
+      },
+      "ports": {
+        "5000": "HTTP"
+      }
+    }
+  },
+  "publicEndpoint": {
+    "containerName": "app",
+    "containerPort": 5000,
+    "healthCheck": {
+      "healthyThreshold": 2,
+      "intervalSeconds": 60,
+      "path": "api/v1/utils/hc",
+      "successCodes": "200-499",
+      "timeoutSeconds": 2,
+      "unhealthyThreshold": 2
+    }
+  }
+}
