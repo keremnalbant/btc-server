@@ -8,7 +8,8 @@
         "DB_USER_COLLECTION": "#{DB_USER_COLLECTION}#",
         "DB_GUESS_COLLECTION": "#{DB_GUESS_COLLECTION}#",
         "CLIENT_URL": "#{CLIENT_URL}#",
-        "BTC_API_URL": "#{BTC_API_URL}#"
+        "BTC_API_URL": "#{BTC_API_URL}#",
+        "CLIENT_DOMAIN": "#{CLIENT_DOMAIN}#"
       },
       "ports": {
         "5000": "HTTP"
