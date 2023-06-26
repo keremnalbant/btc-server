@@ -1,3 +1,5 @@
+from typing import Union
+
 from fastapi import APIRouter, status, Depends
 from auth import get_session_cookie_value
 from models.entities.user import User
@@ -9,8 +11,8 @@ router = APIRouter()
 user_service = UserService()
 
 
-@router.get("/me", status_code=status.HTTP_200_OK, response_model=User)
-async def get_me(sid: str = Depends(get_session_cookie_value)) -> User:
+@router.get("/me", status_code=status.HTTP_200_OK, response_model=Union[User, None])
+async def get_me(sid: str = Depends(get_session_cookie_value)) -> User or None:
     return await user_service.get_user(sid)
 
 

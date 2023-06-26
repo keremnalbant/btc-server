@@ -23,7 +23,7 @@ class UserService:
         await self.repository.create(User(score=0, id=sid))
         return await self.repository.find_one({'id': sid})
 
-    async def update_score(self, sid: str, is_correct: bool):
+    async def update_score(self, sid: str, is_correct: bool) -> User:
         user = await self.get_user(sid)
         if user.score == 0 and not is_correct:
             return user
