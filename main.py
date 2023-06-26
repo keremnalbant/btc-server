@@ -1,4 +1,5 @@
 import os
+from datetime import datetime, timedelta
 
 import uvicorn
 from uuid import uuid4 as uuid
@@ -34,7 +35,7 @@ async def add_session_id(request: Request, call_next):
     response: Response = await call_next(request)
     if has_session_id is None:
         response.set_cookie(
-            key="btc-session", value=session_id, path="/")
+            key="btc-session", value=session_id, path="/", expires=datetime.utcnow()+timedelta(days=365))
     return response
 
 
