@@ -34,6 +34,10 @@ async def add_session_id(request: Request, call_next):
     response: Response = await call_next(request)
     if has_session_id is None:
         response.set_cookie("btc-session", session_id, path="/")
+        response.set_cookie(
+            key="btc-session", value=session_id, path="/", samesite='none', secure=True,
+            domain=os.getenv("CLIENT_DOMAIN")
+        )
     return response
 
 
