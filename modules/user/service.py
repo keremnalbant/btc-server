@@ -1,5 +1,5 @@
 from typing import List
-
+from uuid import uuid4 as uuid
 from models.entities.user import User
 from repositories.user_repository import UserRepository
 
@@ -19,7 +19,8 @@ class UserService:
     async def get_all_users(self) -> List[User]:
         return await self.repository.find_all()
 
-    async def create_user(self, sid: str) -> User:
+    async def create_user(self) -> User:
+        sid = str(uuid())
         await self.repository.create(User(score=0, id=sid))
         return await self.repository.find_one({'id': sid})
 

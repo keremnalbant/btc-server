@@ -16,10 +16,12 @@ class SocketHandler:
     def register_event_handlers(self):
         @self.sio_server.event
         async def connect(sid, environ, auth):
-            found_player = next((x for x in self.active_players if x.cookie == environ['HTTP_COOKIE'].split('btc-session=')[1].split(';')[0]), None)
+            found_player = next((x for x in self.active_players if
+                                 x.token == environ['HTTP_AUTHORIZATION'].split('Bearer ')[1]), None)
             if not found_player:
                 self.active_players.append(
-                    ActivePlayer(sid=sid, cookie=environ['HTTP_COOKIE'].split('btc-session=')[1].split(';')[0]))
+                    ActivePlayer(sid=sid,
+                                 token=environ['HTTP_AUTHORIZATION'].split('Bearer ')[1]))
                 await self.sio_server.emit(EventName.ActivePlayers, len(self.active_players))
 
         @self.sio_server.event
@@ -29,7 +31,7 @@ class SocketHandler:
 
     async def emit(self, event_name: EventName, data: Any, to=None):
         if to:
-            sid = next((x.sid for x in self.active_players if x.cookie == to), None)
+            sid = next((x.sid for x in self.active_players if x.token == to), None)
             await self.sio_server.emit(event_name, data, sid)
         else:
             await self.sio_server.emit(event_name, data)

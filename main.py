@@ -1,8 +1,6 @@
 import os
-from datetime import datetime, timedelta
 import uvicorn
-from uuid import uuid4 as uuid
-from fastapi import FastAPI, Request, Response, Depends, status
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from socket_handler import socket_handler
@@ -24,18 +22,20 @@ app.add_middleware(CORSMiddleware,
                    allow_headers=["*"],
                    allow_credentials=True)
 
+# Cookies removed since CloudFront + AWS S3 Website Hosting doesn't support cookies
+# instead of this we are going to use Authorization header
 
-@app.middleware("http")
-async def add_session_id(request: Request, call_next):
-    session_id = has_session_id = request.cookies.get("btc-session")
-    if session_id is None:
-        session_id = str(uuid())
-    request.cookies.setdefault("btc-session", session_id)
-    response: Response = await call_next(request)
-    if has_session_id is None:
-        response.set_cookie(
-            key="btc-session", value=session_id, path="/", expires=(datetime.utcnow()+timedelta(days=365)).strftime('%a, %d-%b-%Y %T GMT'))
-    return response
+# @app.middleware("http")
+# async def add_session_id(request: Request, call_next):
+#     session_id = has_session_id = request.cookies.get("btc-session")
+#     if session_id is None:
+#         session_id = str(uuid())
+#     request.cookies.setdefault("btc-session", session_id)
+#     response: Response = await call_next(request)
+#     if has_session_id is None:
+#         response.set_cookie(
+#             key="btc-session", value=session_id, path="/", expires=(datetime.utcnow()+timedelta(days=365)).strftime('%a, %d-%b-%Y %T GMT'))
+#     return response
 
 
 if __name__ == "__main__":
