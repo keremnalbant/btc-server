@@ -10,8 +10,8 @@ https://github.com/keremnalbant/btc-server/assets/43813768/f5e875a9-3e10-439a-be
 
 ## Functionalities
 - Real-time notifications and data polling with Websockets (Socket.io)
-- Users can continue to make guesses even they close and reopen their browsers, and even more if the server is restarted, unless they clean their cookies
-- Loginless persisted data achieved by cookies. Make sure your browser doesn't deny cookies!
+- Users can continue to make guesses even they close and reopen their browsers, even more server is restarted, unless they clean their ~~cookies~~ cookies are deprecated since S3 with CloudFront distribution does not support cookies, now we use LocalStorage with bearer tokens.
+- Loginless persisted data with ~~cookies~~ LocalStorage
 - Custom managers/handlers with Singleton Design Pattern
 - Strong type-safety achieved via Pydantic
 - Modular Design Pattern
