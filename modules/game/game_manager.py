@@ -1,6 +1,5 @@
 import asyncio
 import time
-from typing import Coroutine
 from uuid import uuid4 as uuid
 
 from btc_data import get_btc_usd_value
@@ -21,6 +20,7 @@ class GameManager:
         self.start_time = time.time()
         self.current_value = 0
         self.difference = 0.0
+        self.round_length = 60
         asyncio.create_task(self.__init())
 
     @property
@@ -29,23 +29,16 @@ class GameManager:
 
     async def __init(self):
         self.current_value = await get_btc_usd_value()
-        await self.__create_scheduler()
+        await self.__start_game()
 
-    async def __create_scheduler(self):
-        start_time = time.time()
-        send_times = [start_time + i for i in range(0, 60)]
-        for send_time in send_times:
-            asyncio.ensure_future(self.__schedule_task(send_time, self.__emit_time()))
-        await self.__schedule_task(start_time + 61, self.__evaluate())
-
-    async def __schedule_task(self, run_time: float, task: Coroutine):
-        delay = run_time - time.time()
-        if delay > 0:
-            await asyncio.sleep(delay)
-        await task
-
-    async def __emit_time(self):
-        await self.socket.emit(EventName.Time, 60 - self.time_passed)
+    async def __start_game(self):
+        while True:
+            if self.round_length - self.time_passed >= 0:
+                print("emit_time", time.time())
+                await self.socket.emit(EventName.Time, self.round_length - self.time_passed)
+                await asyncio.sleep(1)
+            else:
+                await self.__evaluate()
 
     async def __evaluate(self):
         new_value = await get_btc_usd_value()
@@ -73,7 +66,6 @@ class GameManager:
         # endregion
         # region Start New Game
         self.start_time = time.time()
-        await self.__create_scheduler()
         # endregion
 
     async def __calculate_percentage_difference(self, old_value, new_value):
