@@ -1,5 +1,4 @@
 from typing import List, Any
-
 import socketio
 
 from models.entities.active_player import ActivePlayer
@@ -17,12 +16,14 @@ class SocketHandler:
         @self.sio_server.event
         async def connect(sid, environ, auth):
             try:
+                if not environ.get('HTTP_AUTHORIZATION', "").startswith('Bearer '):
+                    return
                 found_player = next((x for x in self.active_players if
-                                     x.token == environ['HTTP_AUTHORIZATION'].split('Bearer ')[1]), None)
+                                     x.token == environ.get('HTTP_AUTHORIZATION').split('Bearer ')[1]), None)
                 if not found_player:
                     self.active_players.append(
                         ActivePlayer(sid=sid,
-                                     token=environ['HTTP_AUTHORIZATION'].split('Bearer ')[1]))
+                                     token=environ.get('HTTP_AUTHORIZATION').split('Bearer ')[1]))
                     await self.emit_with_retry(EventName.ActivePlayers, len(self.active_players))
             except Exception as e:
                 print(e)

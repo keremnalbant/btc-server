@@ -27,16 +27,18 @@ class GameManager:
     def time_passed(self) -> float:
         return time.time() - self.start_time
 
+    @property
+    def countdown(self) -> float:
+        return self.round_length - self.time_passed
+
     async def __init(self):
         self.current_value = await get_btc_usd_value()
         await self.__start_game()
 
     async def __start_game(self):
         while True:
-            print("while", self.round_length - self.time_passed)
-            if self.round_length - self.time_passed >= 0:
-                print("emit_time", time.time())
-                await self.socket.emit_with_retry(EventName.Time, self.round_length - self.time_passed)
+            if self.countdown >= 0:
+                await self.socket.emit_with_retry(EventName.Time, self.countdown)
                 await asyncio.sleep(1)
             else:
                 await self.__evaluate()
@@ -56,10 +58,11 @@ class GameManager:
             try:
                 guesses = await self.guess_service.get_all_by_game_id(self.id)
                 for guess in guesses:
-                    is_correct = (new_value > self.current_value and guess.guess == GuessEnum.Up) or (
-                            new_value < self.current_value and guess.guess == GuessEnum.Down)
-                    user = await self.user_service.update_score(guess.user_id, is_correct)
-                    users.append(user)
+                    if guess.user_id not in [user.id for user in users]:
+                        is_correct = (new_value > self.current_value and guess.guess == GuessEnum.Up) or (
+                                new_value < self.current_value and guess.guess == GuessEnum.Down)
+                        user = await self.user_service.update_score(guess.user_id, is_correct)
+                        users.append(user)
                 break
             except Exception as e:
                 print(e)
@@ -77,7 +80,6 @@ class GameManager:
         # region Emit Socres
         tasks = [self.socket.emit_with_retry(EventName.Score, user.score, to=user.id) for user in users]
         await asyncio.gather(*tasks)
-
         # endregion
         # region Start New Game
         self.start_time = time.time()

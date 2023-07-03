@@ -19,8 +19,9 @@ class UserService:
     async def get_all_users(self) -> List[User]:
         return await self.repository.find_all()
 
-    async def create_user(self) -> User:
-        sid = str(uuid())
+    async def create_user(self, sid=None) -> User:
+        if not sid:
+            sid = str(uuid())
         await self.repository.create(User(score=0, id=sid))
         return await self.repository.find_one({'id': sid})
 
