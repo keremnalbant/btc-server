@@ -16,10 +16,14 @@ class GuessService:
     async def guess(self, guess: GuessEnum, game_id: str, user: User):
         is_guessed = await self.repository.find_one({'game_id': game_id, 'user_id': user.id})
         if is_guessed:
-            raise HTTPException(status_code=400, detail="You have already made a guess this game")
+            raise HTTPException(status_code=400, detail=is_guessed.guess)
 
         await self.repository.create(
             Guess(id=str(uuid()), guess=guess, user_id=user.id, game_id=game_id, created_at=datetime.datetime.now()))
+
+    async def get_by_game_id(self, game_id: str, user: User) -> GuessEnum:
+        guess = await self.repository.find_one({'game_id': game_id, 'user_id': user.id})
+        return guess.guess if guess else None
 
     async def get_all_by_game_id(self, game_id: str) -> List[Guess]:
         return await self.repository.find({'game_id': game_id})
